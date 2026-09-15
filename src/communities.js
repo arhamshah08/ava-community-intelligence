@@ -90,6 +90,7 @@ export function renderCommunities(root) {
         { direction: 'top', className: 'dc-label', offset: [0, -6] }
       );
     m.on('click', () => select(c));
+    if (c.load) m.options.title = c.load;
     markers.set(c.id, m);
   }
 
@@ -115,17 +116,15 @@ export function renderCommunities(root) {
             <div class="stat__label">Launched</div>
             <div class="stat__value">${c.launched}</div>
           </div>
+          <div>
+            <div class="stat__label">Serves</div>
+            <div class="stat__value" style="font-size:var(--fs-sm);font-weight:var(--fw-normal);line-height:1.35">${esc(c.serves)}</div>
+          </div>
+          <div>
+            <div class="stat__label">HQ</div>
+            <div class="stat__value" style="font-size:var(--fs-sm);font-weight:var(--fw-normal);line-height:1.35">${esc(c.hq)}</div>
+          </div>
         </div>
-
-        <section>
-          <div class="sec__title">Serves</div>
-          <p class="nobar">${esc(c.serves)}. Headquartered in ${esc(c.hq)}.</p>
-        </section>
-
-        <section>
-          <div class="sec__title">Why it matters here</div>
-          <p class="nobar">${esc(c.load)}</p>
-        </section>
 
         <section>
           <div class="sec__title">Programmes already running</div>
@@ -133,8 +132,9 @@ export function renderCommunities(root) {
             ${c.programs
               .map(
                 (p) => `
-              <div class="ledger__row commprog">
-                <span><b>${esc(p.name)}</b><small>${esc(p.desc)}</small></span>
+              <div class="ledger__row" title="${esc(p.desc)}">
+                <span>${esc(p.name)}</span>
+                <span></span>
               </div>`
               )
               .join('')}
@@ -175,11 +175,7 @@ export function renderCommunities(root) {
           </div>
         </section>
 
-        <p class="nobar">
-          ${esc(c.site)} · Organisations and programmes here are real. Named people and
-          officeholders change — anything marked <b>verify</b> was accurate as of
-          ${esc(AS_OF)} and must be checked before outreach.
-        </p>
+        <p class="nobar">Named people verified as of early 2026.</p>
       </div>
     `;
   }

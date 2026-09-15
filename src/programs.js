@@ -155,7 +155,6 @@ export function renderPrograms(root) {
       <section class="card" style="margin-top:16px">
         <div class="card__head">
           <span class="card__title">How it stacks for one household</span>
-          <span class="card__note">highest earning first</span>
         </div>
         <div class="card__body" style="padding-top:8px">
           <div class="drill">

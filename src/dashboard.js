@@ -146,7 +146,6 @@ export function renderDashboard(root) {
         <section class="card">
           <div class="card__head">
             <span class="card__title">By neighbourhood</span>
-            <span class="card__note">average per household</span>
           </div>
           <div class="card__body">
             <div class="hoodlist">

@@ -1276,6 +1276,79 @@ table.tbl th.num { text-align: right; }
 .commpanel__sub { font-size: var(--fs-sm); margin: 4px 0 8px; }
 .commpanel__body { padding: 18px 20px 30px; display: grid; gap: 18px; }
 
-.commprog span { display: grid; gap: 2px; }
-.commprog b { font-weight: var(--fw-bold); }
-.commprog small { font-size: var(--fs-sm); }
+/* ── walkthrough (presentation surface — not product UI) ───────────────────
+   Typography exception: walkthrough-only tokens. Product UI stays at
+   30/16/14. These two sizes are used only by .wt-* classes. */
+body.wt-mode .nav { display: none; }
+body.wt-mode .main {
+  margin-left: 0;
+  width: 100%;
+  max-width: none;
+}
+body.wt-mode {
+  --fs-slide: 72px;
+  --fs-slide-dot: 14px;
+}
+
+.wt {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  padding: 48px 40px 40px;
+  background: #ffffff;
+  outline: none;
+  cursor: pointer;
+}
+.wt__caption {
+  font-size: var(--fs-slide);
+  font-weight: 600;
+  line-height: 1.25;
+  color: #111111;
+  text-align: center;
+  max-width: 14ch;
+  letter-spacing: -0.02em;
+}
+.wt__frame {
+  width: min(920px, 92vw);
+  max-height: 52vh;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.wt__img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 52vh;
+  object-fit: contain;
+}
+.wt__bar {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-top: 8px;
+}
+.wt__dots {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.wt__dot {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: #d0d5db;
+  cursor: pointer;
+}
+.wt__dot.is-on { background: #111111; }
+.wt__next { pointer-events: auto; }
+

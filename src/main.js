@@ -13,6 +13,7 @@ import { renderPermitsTab } from './layers/permits.js';
 import { renderSolarTab } from './layers/solar.js';
 import { renderGreenButtonTab } from './layers/greenbutton.js';
 import { renderAbout } from './about.js';
+import { renderWalkthrough } from './walkthrough.js';
 import { closeDossier } from './dossier.js';
 import { PORTFOLIO } from './data/homes.js';
 import { num } from './format.js';
@@ -27,6 +28,7 @@ const TABS = [
   { id: 'solar', label: 'Solar imagery', group: 'Intelligence', render: renderSolarTab },
   { id: 'green-button', label: 'Smart meter data', group: 'Intelligence', render: renderGreenButtonTab },
   { id: 'about', label: 'About', group: 'Context', render: renderAbout },
+  { id: 'walkthrough', label: 'Walkthrough', group: 'Context', render: renderWalkthrough, flush: true },
 ];
 
 const MARK = `<svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">

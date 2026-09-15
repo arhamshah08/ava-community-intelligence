@@ -75,7 +75,6 @@ export function renderDesigner(root) {
       <section class="card designer__inputs">
         <div class="card__head">
           <span class="card__title">Design a campus</span>
-          <span class="card__note">step 1</span>
         </div>
         <div class="card__body" style="display:grid;gap:18px">
           <div class="field">
