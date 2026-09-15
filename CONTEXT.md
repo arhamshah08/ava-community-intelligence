@@ -2,7 +2,7 @@
 
 **Canonical folder:** `~/ava-community-intelligence`
 **Status:** active · live at https://ava-community-intelligence.vercel.app · dev on `localhost:5174`
-**Last meaningful work:** 2026-09-15
+**Last meaningful work:** 2026-09-15 — rebuilt the accelerator presentation as a 15-slide, image-first 1920×1080 PNG sequence in `deck-png/`; all layouts are native, with reference-slide crops used only for photos, the map, and news imagery.
 
 ## What it is
 
@@ -24,6 +24,10 @@ card (capacity, utilisation, asset icons); double-click dossier with asset regis
 install dates; permit pipeline animation; solar detection sweep (8 detections, 17.4% block
 adoption); interval disaggregation; customer recommendations with per-household ROI;
 message generator across five benefit angles; leaderboard.
+
+Presentation deliverable: `deck-png/slide-01.png` through `slide-15.png`, plus the
+packaged `ava-community-intelligence-deck-png.zip`. The earlier HTML-deck draft was
+removed after the output direction changed to standalone slide images.
 
 ## Decisions worth remembering
 
@@ -82,8 +86,8 @@ Redeploy with `vercel --prod --yes` from the project root. Account `arhamshah08`
 
 ## Next step
 
-Nothing outstanding. Repo is public, site is live and unguarded (Arham confirmed no
-password needed).
+Review or revise the 15-slide PNG deck in `deck-png/`. Repo is public, site is live and
+unguarded (Arham confirmed no password needed).
 
 Open question Arham has not answered: the heat pump only reaches the recommended list
 because of two added assumptions — a $6,500 stacked CA incentive (TECH + BayREN + 25C)

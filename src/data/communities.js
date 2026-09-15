@@ -1,15 +1,14 @@
 // California community energy providers, for territory exploration.
 //
-// IMPORTANT — unlike the rest of this app, the facts here describe real
-// organisations and real people. Structural facts (who serves where, when a CCA
-// launched, what programmes it runs) are stable. NAMED INDIVIDUALS AND
-// OFFICEHOLDERS ARE NOT: executives move and elections happen. Every person
-// below carries `verify: true` and the UI marks them accordingly. Treat them as
-// a starting point for research, never as a confirmed contact list.
+// These describe real organisations. Only organisation-level public facts are
+// held here — who serves where, when a CCA launched, what programmes it runs.
+//
+// NO NAMED INDIVIDUALS. No executives, no councillors, no legislators. This is
+// deployed to a public URL, officeholders change, and a stale name presented as
+// current is worse than no name. Anyone doing outreach should look the current
+// officeholder up at source. Do not reintroduce names here.
 //
 // Account counts are approximate orders of magnitude, not audited figures.
-
-export const AS_OF = 'early 2026';
 
 export const COMMUNITIES = [
   {
@@ -32,16 +31,6 @@ export const COMMUNITIES = [
       { name: 'EV incentives and charging', desc: 'Rebates for used EVs and charger installs.' },
       { name: 'Resilient Homes', desc: 'Storage for medically vulnerable and wildfire-exposed customers.' },
     ],
-    people: [
-      { role: 'Chief Executive Officer', name: 'Nick Chaset', verify: true },
-      { role: 'Governance', name: 'Board of directors drawn from member city councils and the county board', verify: false },
-    ],
-    political: [
-      { office: 'US Senate (CA)', name: 'Alex Padilla · Adam Schiff', verify: true },
-      { office: 'US House', name: 'CA-12 (Oakland) and CA-13 (Tracy/Stockton)', verify: true },
-      { office: 'State Senate', name: 'SD-7 covers most of Alameda County', verify: true },
-      { office: 'Regulator', name: 'CPUC · California Energy Commission', verify: false },
-    ],
   },
   {
     id: 'mce',
@@ -62,14 +51,6 @@ export const COMMUNITIES = [
       { name: 'Low-Income Families and Tenants (LIFT)', desc: 'Electrification for multifamily affordable housing.' },
       { name: 'Peak FLEXmarket', desc: 'Pay-for-performance load reduction via aggregators.' },
     ],
-    people: [
-      { role: 'Chief Executive Officer', name: 'Dawn Weisz', verify: true },
-      { role: 'Governance', name: 'Board of member jurisdictions across four counties', verify: false },
-    ],
-    political: [
-      { office: 'US House', name: 'CA-02, CA-08, CA-10 overlap the territory', verify: true },
-      { office: 'State Senate', name: 'SD-03 covers Napa and Solano', verify: true },
-    ],
   },
   {
     id: 'pce',
@@ -87,11 +68,6 @@ export const COMMUNITIES = [
       { name: '24/7 hourly matched supply', desc: 'Clean energy matched hour by hour, not annually.' },
       { name: 'EV ready and charger grants', desc: 'Multifamily and workplace charging build-out.' },
       { name: 'Heat pump water heater programme', desc: 'Contractor-led swap incentives.' },
-    ],
-    people: [{ role: 'Chief Executive Officer', name: 'Jan Pepper', verify: true }],
-    political: [
-      { office: 'US House', name: 'CA-15 and CA-16', verify: true },
-      { office: 'State Senate', name: 'SD-13', verify: true },
     ],
   },
   {
@@ -111,11 +87,6 @@ export const COMMUNITIES = [
       { name: 'FutureFit Homes', desc: 'All-electric new construction incentives.' },
       { name: 'eBike and EV rebates', desc: 'Income-qualified transport electrification.' },
     ],
-    people: [{ role: 'Chief Executive Officer', name: 'Girish Balachandran', verify: true }],
-    political: [
-      { office: 'US House', name: 'CA-16, CA-17, CA-18', verify: true },
-      { office: 'State Senate', name: 'SD-10 and SD-15', verify: true },
-    ],
   },
   {
     id: 'cleanpowersf',
@@ -132,14 +103,6 @@ export const COMMUNITIES = [
     programs: [
       { name: 'SuperGreen', desc: '100% renewable opt-up.' },
       { name: 'Solar and storage incentives', desc: 'Delivered with SF Environment.' },
-    ],
-    people: [
-      { role: 'Operator', name: 'San Francisco Public Utilities Commission', verify: false },
-      { role: 'Oversight', name: 'SF Board of Supervisors sits over SFPUC', verify: false },
-    ],
-    political: [
-      { office: 'US House', name: 'CA-11', verify: true },
-      { office: 'State Senate', name: 'SD-11', verify: true },
     ],
   },
   {
@@ -159,11 +122,6 @@ export const COMMUNITIES = [
       { name: 'GridSavvy Rewards', desc: 'Demand response across EVs, heat pump water heaters and thermostats.' },
       { name: 'Backup Power Rebate', desc: 'Storage for PSPS-exposed customers.' },
     ],
-    people: [{ role: 'Chief Executive Officer', name: 'Geof Syphers', verify: true }],
-    political: [
-      { office: 'US House', name: 'CA-02 and CA-04', verify: true },
-      { office: 'State Senate', name: 'SD-02', verify: true },
-    ],
   },
   {
     id: 'cpa',
@@ -182,11 +140,6 @@ export const COMMUNITIES = [
       { name: 'Solar and storage for income-qualified customers', desc: 'Disadvantaged community focus.' },
       { name: 'Power Share', desc: 'Discounted rates for qualifying households.' },
     ],
-    people: [{ role: 'Executive Director', name: 'Ted Bardacke', verify: true }],
-    political: [
-      { office: 'US House', name: 'Multiple LA and Ventura districts', verify: true },
-      { office: 'State Senate', name: 'SD-23, SD-24, SD-27 among others', verify: true },
-    ],
   },
   {
     id: 'sdcp',
@@ -203,11 +156,6 @@ export const COMMUNITIES = [
     programs: [
       { name: 'Power100', desc: '100% renewable opt-up.' },
       { name: 'Demand response and VPP pilots', desc: 'Residential storage aggregation.' },
-    ],
-    people: [{ role: 'Chief Executive Officer', name: 'Karin Burns', verify: true }],
-    political: [
-      { office: 'US House', name: 'CA-50, CA-51, CA-52', verify: true },
-      { office: 'State Senate', name: 'SD-18, SD-39, SD-40', verify: true },
     ],
   },
   {
@@ -227,11 +175,6 @@ export const COMMUNITIES = [
       { name: 'Electrification incentives', desc: 'Agricultural pumps, fleets and building retrofits.' },
       { name: 'EV rebates', desc: 'New and used vehicles, income-tiered.' },
     ],
-    people: [{ role: 'Chief Executive Officer', name: 'Tom Habashi', verify: true }],
-    political: [
-      { office: 'US House', name: 'CA-18, CA-19', verify: true },
-      { office: 'State Senate', name: 'SD-17', verify: true },
-    ],
   },
   {
     id: 'smud',
@@ -249,13 +192,6 @@ export const COMMUNITIES = [
       { name: '2030 Zero Carbon Plan', desc: 'One of the most aggressive utility decarbonisation targets in the US.' },
       { name: 'Powerwall / storage pilots', desc: 'Utility-controlled residential storage.' },
       { name: 'Building electrification rebates', desc: 'Heat pumps, HPWH and panel upgrades.' },
-    ],
-    people: [
-      { role: 'Governance', name: 'Elected seven-member Board of Directors', verify: false },
-    ],
-    political: [
-      { office: 'US House', name: 'CA-06, CA-07', verify: true },
-      { office: 'State Senate', name: 'SD-06, SD-08', verify: true },
     ],
   },
 ];

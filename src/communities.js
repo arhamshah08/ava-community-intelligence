@@ -5,7 +5,7 @@
 // offices matter for outreach.
 
 import L from 'leaflet';
-import { COMMUNITIES, AS_OF } from './data/communities.js';
+import { COMMUNITIES } from './data/communities.js';
 import { IMAGERY_URL, IMAGERY_ATTR } from './map.js';
 import { num, esc } from './format.js';
 
@@ -33,9 +33,6 @@ export function renderCommunities(root) {
     COMMUNITIES.reduce((s, c) => s + c.accounts, 0)
   )} accounts between them</span>
         </div>
-        <span class="progflag" style="margin-left:auto">People verified as of ${esc(
-          AS_OF
-        )}</span>
       </header>
       <div class="tabshell__body commwrap">
         <div id="comm-map"></div>
@@ -141,41 +138,8 @@ export function renderCommunities(root) {
           </div>
         </section>
 
-        <section>
-          <div class="sec__title">Who runs it</div>
-          <div class="ledger">
-            ${c.people
-              .map(
-                (p) => `
-              <div class="ledger__row">
-                <span>${esc(p.role)}</span>
-                <span>${esc(p.name)}${
-                  p.verify ? ' <span class="tag tag--muted">verify</span>' : ''
-                }</span>
-              </div>`
-              )
-              .join('')}
-          </div>
-        </section>
 
-        <section>
-          <div class="sec__title">Offices that matter</div>
-          <div class="ledger">
-            ${c.political
-              .map(
-                (p) => `
-              <div class="ledger__row">
-                <span>${esc(p.office)}</span>
-                <span>${esc(p.name)}${
-                  p.verify ? ' <span class="tag tag--muted">verify</span>' : ''
-                }</span>
-              </div>`
-              )
-              .join('')}
-          </div>
-        </section>
 
-        <p class="nobar">Named people verified as of early 2026.</p>
       </div>
     `;
   }
