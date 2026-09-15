@@ -23,7 +23,6 @@ import {
 import { assetStrip, icon } from './icons.js';
 import { usd, num, pct, esc } from './format.js';
 
-// The five benefit categories a message can lead with.
 const ANGLES = [
   { id: 'roi', label: 'Return', hint: 'Money back, fastest payback first' },
   { id: 'environmental', label: 'Environment', hint: 'Tonnes of carbon off the property' },
@@ -112,12 +111,7 @@ Ava Community Energy covers the assessment and handles the paperwork. Reply and 
 }
 
 export function renderCustomers(root, preselectId) {
-  const state = {
-    sort: 'mix',
-    filter: 'all',
-    selectedId: null,
-    angle: 'roi',
-  };
+  const state = { sort: 'mix', filter: 'all', selectedId: null, angle: 'roi' };
 
   root.innerHTML = `
     <div class="page">
@@ -125,9 +119,8 @@ export function renderCustomers(root, preselectId) {
         <div class="page__eyebrow">Customers</div>
         <h1 class="page__title">What to offer each household, and why they will say yes</h1>
         <p class="page__sub">
-          Every row is scored from the three intelligence layers. The recommendation is the
-          measure with the best cash return that this household does not already have; the
-          operator note is what matters before anyone is enrolled.
+          Every row is scored from the three intelligence layers. Double-click a household
+          to open its full case: the recommendation, the value stack, and what comes next.
         </p>
       </header>
 
@@ -148,29 +141,27 @@ export function renderCustomers(root, preselectId) {
         <span class="synthetic" style="margin-left:auto">Synthetic households</span>
       </div>
 
-      <div class="two-col two-col--wide">
-        <section class="card">
-          <div class="card__head">
-            <span class="card__title">Customer list</span>
-            <span class="card__note" id="c-count"></span>
-          </div>
-          <div class="ctable-wrap">
-            <table class="tbl ctable">
-              <thead>
-                <tr>
-                  <th>Household</th>
-                  <th>Recommend</th>
-                  <th>Value stack</th>
-                  <th class="num">Next</th>
-                </tr>
-              </thead>
-              <tbody id="c-rows"></tbody>
-            </table>
-          </div>
-        </section>
-
-        <div id="c-detail"></div>
-      </div>
+      <section class="card">
+        <div class="card__head">
+          <span class="card__title">Customer list</span>
+          <span class="card__note" id="c-count"></span>
+        </div>
+        <div class="ctable-wrap ctable-wrap--full">
+          <table class="tbl ctable">
+            <thead>
+              <tr>
+                <th>Household</th>
+                <th>Assets</th>
+                <th>Recommend</th>
+                <th class="num">Return</th>
+                <th>Value stack</th>
+                <th>Next in the stack</th>
+              </tr>
+            </thead>
+            <tbody id="c-rows"></tbody>
+          </table>
+        </div>
+      </section>
 
       <section class="card" style="margin-top:16px">
         <div class="card__head">
@@ -185,7 +176,6 @@ export function renderCustomers(root, preselectId) {
   `;
 
   const rowsEl = root.querySelector('#c-rows');
-  const detailEl = root.querySelector('#c-detail');
 
   function pool() {
     let list = HOMES;
@@ -246,7 +236,7 @@ export function renderCustomers(root, preselectId) {
     const maxStack = Math.max(1, ...list.map((h) => ladderFor(h).total));
     root.querySelector('#c-count').textContent = `showing ${num(
       list.length
-    )} of ${num(HOMES.length)}`;
+    )} of ${num(HOMES.length)} · double-click for the full case`;
 
     rowsEl.innerHTML = list
       .map((h) => {
@@ -260,13 +250,15 @@ export function renderCustomers(root, preselectId) {
           h.netKwh
         )} kWh/yr · ${h.flexKw} kW flexible</div>
           </td>
+          <td><div class="facets">${assetStrip(h)}</div></td>
           <td>
             <span class="tag ${h.ready ? 'tag--ready' : 'tag--upgrade'}">${
           top ? esc(top.short) : 'Nothing pays yet'
         }</span>
           </td>
+          <td class="num">${top ? pct(roiOf(top), 0) : '—'}</td>
           <td>${stackBar(lad, maxStack)}</td>
-          <td class="num ctable__next">${
+          <td class="ctable__next">${
             lad.next ? esc(lad.next.short) : 'Fully stacked'
           }</td>
         </tr>`;
@@ -274,298 +266,14 @@ export function renderCustomers(root, preselectId) {
       .join('');
 
     rowsEl.querySelectorAll('tr').forEach((tr) => {
-      tr.onclick = () => selectHome(tr.dataset.id);
-      tr.ondblclick = () => openWhy(HOMES.find((h) => h.id === tr.dataset.id));
-    });
-  }
-
-  function selectHome(id) {
-    state.selectedId = id;
-    rowsEl
-      .querySelectorAll('tr')
-      .forEach((tr) => tr.classList.toggle('is-sel', tr.dataset.id === id));
-    drawDetail();
-  }
-
-  function drawDetail() {
-    const home = HOMES.find((h) => h.id === state.selectedId);
-    if (!home) {
-      detailEl.innerHTML = `
-        <div class="card"><div class="card__body">
-          <div class="empty-state empty-state--sm">
-            <h3>Select a household</h3>
-            <p>Pick a row to see the full recommendation, the operator note, the five benefit
-               angles and a message drafted for whichever one lands.</p>
-          </div>
-        </div></div>`;
-      return;
-    }
-
-    const { ranked, belowBar, prerequisite, top } = rankMeasures(home);
-    const b = benefitsFor(home);
-    const ins = operatorInsight(home);
-
-    detailEl.innerHTML = `
-      <div style="display:grid;gap:16px">
-        <section class="card">
-          <div class="card__head">
-            <div>
-              <div class="card__title">${esc(home.address)}</div>
-              <div class="card__note">${esc(
-      home.neighborhood
-    )} · built ${home.yearBuilt} · ${home.panelAmps} A</div>
-            </div>
-            <span class="tag ${home.ready ? 'tag--ready' : 'tag--upgrade'}">${
-      home.ready ? 'Ready today' : 'Upgrade first'
-    }</span>
-          </div>
-          <div class="card__body">
-            <div class="sec__title">Most valuable next move</div>
-            ${
-              top
-                ? `<div class="reco">
-                     <div class="reco__top">
-                       <span class="reco__icon">${icon(top.key)}</span>
-                       <div>
-                         <div class="reco__label">${esc(top.label)}</div>
-                         <div class="reco__why">${esc(top.why)}</div>
-                       </div>
-                     </div>
-                     <div class="reco__nums">
-                       <div><div class="stat__label">Net cost</div><div class="stat__value">${usd(
-                         netCapex(top)
-                       )}</div><div class="stat__foot">after ${usd(
-                    top.incentive
-                  )} incentive</div></div>
-                       <div><div class="stat__label">Annual value</div><div class="stat__value" style="color:var(--ink)">${usd(
-                         top.cash
-                       )}</div><div class="stat__foot">bill + flexibility</div></div>
-                       <div><div class="stat__label">Return</div><div class="stat__value">${pct(
-                         roiOf(top),
-                         0
-                       )}</div><div class="stat__foot">${
-                    paybackOf(top)?.toFixed(1) ?? '—'
-                  } yr payback</div></div>
-                     </div>
-                   </div>`
-                : `<p class="nobar">Nothing on this property clears the return bar today${
-                    dcProgramEnabled()
-                      ? ''
-                      : ' — switch the data centre programme on and it will'
-                  }.</p>`
-            }
-            ${
-              prerequisite
-                ? `<div class="prereq">
-                     <b>Prerequisite:</b> ${esc(prerequisite.label)} · ${usd(
-                    netCapex(prerequisite)
-                  )} net. ${esc(prerequisite.why)}
-                   </div>`
-                : ''
-            }
-
-            <div class="sec__title" style="margin-top:18px">Also worth doing</div>
-            <div class="ledger">
-              ${ranked
-                .slice(1, 4)
-                .map(
-                  (m) => `
-                <div class="ledger__row">
-                  <span>${esc(m.short)} · ${usd(netCapex(m))} net</span>
-                  <span>${pct(roiOf(m), 0)} · ${
-                    paybackOf(m)?.toFixed(1) ?? '—'
-                  } yr</span>
-                </div>`
-                )
-                .join('')}
-              ${
-                ranked.length <= 1
-                  ? '<div class="ledger__row"><span>Nothing else clears the bar</span><span>—</span></div>'
-                  : ''
-              }
-            </div>
-            ${
-              belowBar.length
-                ? `<div class="sec__title" style="margin-top:18px">Not justified on return today</div>
-                   <div class="ledger">
-                     ${belowBar
-                       .map(
-                         (m) => `
-                       <div class="ledger__row is-neg">
-                         <span>${esc(m.short)} · ${usd(netCapex(m))} net</span>
-                         <span>${pct(roiOf(m), 0)}</span>
-                       </div>`
-                       )
-                       .join('')}
-                   </div>
-                   <p class="nobar">Worth doing for carbon or comfort, but it does not pay
-                   for itself at ${pct(ROI_FLOOR, 0)} — so we do not lead with it.</p>`
-                : ''
-            }
-          </div>
-        </section>
-
-        <section class="card">
-          <div class="card__head"><span class="card__title">Grid operator note</span></div>
-          <div class="card__body">
-            <div style="display:flex;gap:9px;align-items:flex-start">
-              <span class="tag ${insightTagClass(ins.level)}">${esc(ins.level[0].toUpperCase() + ins.level.slice(1))}</span>
-              <div>
-                <div style="font-size:var(--fs-sm);font-weight:var(--fw-bold)">${esc(ins.headline)}</div>
-                <div style="font-size:var(--fs-sm);color:var(--ink);margin-top:3px;line-height:var(--lh-body)">${esc(
-                  ins.detail
-                )}</div>
-              </div>
-            </div>
-            <div class="ledger" style="margin-top:14px">
-              <div class="ledger__row"><span>Service utilisation today</span><span>${pct(
-                home.utilNow,
-                0
-              )} of ${home.usableAmps} A usable</span></div>
-              <div class="ledger__row ${
-                home.utilProjected > 1 ? 'is-neg' : ''
-              }"><span>After full electrification</span><span>${pct(
-      home.utilProjected,
-      0
-    )}</span></div>
-            </div>
-          </div>
-        </section>
-
-        <section class="card">
-          <div class="card__head"><span class="card__title">Why they would say yes</span></div>
-          <div class="card__body">
-            <div class="benefits">
-              <div class="benefit">
-                <div class="benefit__label">Return</div>
-                <div class="benefit__value">${pct(b.roi.bundleRoi, 0)}</div>
-                <div class="benefit__foot">${usd(
-                  b.roi.bundleCash
-                )}/yr on ${usd(b.roi.bundleCapex)} · ${
-      b.roi.bundlePayback?.toFixed(1) ?? '—'
-    } yr</div>
-              </div>
-              <div class="benefit">
-                <div class="benefit__label">Environment</div>
-                <div class="benefit__value">${b.environmental.co2TonsPerYear} t</div>
-                <div class="benefit__foot">per year · ${usd(
-                  b.environmental.carbonValue
-                )} at social cost</div>
-              </div>
-              <div class="benefit">
-                <div class="benefit__label">Resilience</div>
-                <div class="benefit__value">${
-                  b.resilience.backupHours || '0'
-                } h</div>
-                <div class="benefit__foot">${esc(b.resilience.note)}</div>
-              </div>
-              <div class="benefit">
-                <div class="benefit__label">Community</div>
-                <div class="benefit__value">${usd(b.community.localLabour)}</div>
-                <div class="benefit__foot">local labour · ${usd(
-                  b.community.flexRevenueYr
-                )}/yr flexibility revenue</div>
-              </div>
-              <div class="benefit">
-                <div class="benefit__label">Standing</div>
-                <div class="benefit__value">#${num(home.hoodRank)}</div>
-                <div class="benefit__foot">of ${num(
-                  home.hoodCount
-                )} in ${esc(home.neighborhood)} · #${num(home.rank)} territory-wide</div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section class="card">
-          <div class="card__head">
-            <span class="card__title">Value stack</span>
-            <span class="card__note">what pays this household, by programme</span>
-          </div>
-          <div class="card__body">
-            ${stackPanel(home)}
-            <div class="ledger" style="margin-top:14px">
-              ${stackFor(home)
-                .annual.map(
-                  (row) => `
-                <div class="ledger__row">
-                  <span>${esc(row.label)}${
-                    row.note ? ` · ${esc(row.note)}` : ''
-                  }</span>
-                  <span>${usd(row.amount)}/yr</span>
-                </div>`
-                )
-                .join('')}
-              <div class="ledger__row is-total"><span>Total</span><span>${usd(
-                stackFor(home).total
-              )}/yr</span></div>
-            </div>
-            ${
-              stackFor(home).capex.length
-                ? `<div class="ledger" style="margin-top:12px">
-                     ${stackFor(home)
-                       .capex.map(
-                         (row) => `
-                     <div class="ledger__row"><span>${esc(
-                       row.label
-                     )}</span><span>-${usd(row.amount)} upfront</span></div>`
-                       )
-                       .join('')}
-                   </div>`
-                : ''
-            }
-            <p class="nobar"><a href="#/programs" class="dash-link">Change which programmes are running</a></p>
-          </div>
-        </section>
-
-        <section class="card">
-          <div class="card__head">
-            <span class="card__title">Personalised outreach</span>
-            <span class="card__note">lead with the angle that lands</span>
-          </div>
-          <div class="card__body">
-            <div class="filters__row" id="c-angles">
-              ${ANGLES.map(
-                (a) =>
-                  `<button class="chip ${
-                    a.id === state.angle ? 'is-on' : ''
-                  }" data-angle="${a.id}" title="${esc(a.hint)}">${esc(a.label)}</button>`
-              ).join('')}
-            </div>
-            <textarea class="message" id="c-message" rows="11" spellcheck="false"></textarea>
-            <div style="display:flex;gap:9px;margin-top:10px;align-items:center">
-              <button class="btn" id="c-copy">Copy message</button>
-              <span class="card__note" id="c-copied"></span>
-            </div>
-          </div>
-        </section>
-      </div>
-    `;
-
-    const msg = detailEl.querySelector('#c-message');
-    msg.value = composeMessage(home, state.angle);
-
-    detailEl.querySelectorAll('#c-angles .chip').forEach((chip) => {
-      chip.onclick = () => {
-        state.angle = chip.dataset.angle;
-        detailEl
-          .querySelectorAll('#c-angles .chip')
-          .forEach((c) => c.classList.toggle('is-on', c === chip));
-        msg.value = composeMessage(home, state.angle);
+      tr.onclick = () => {
+        state.selectedId = tr.dataset.id;
+        rowsEl
+          .querySelectorAll('tr')
+          .forEach((x) => x.classList.toggle('is-sel', x === tr));
       };
+      tr.ondblclick = () => openCustomer(HOMES.find((h) => h.id === tr.dataset.id));
     });
-
-    detailEl.querySelector('#c-copy').onclick = async () => {
-      const flag = detailEl.querySelector('#c-copied');
-      try {
-        await navigator.clipboard.writeText(msg.value);
-        flag.textContent = 'Copied to clipboard';
-      } catch {
-        msg.select();
-        flag.textContent = 'Selected — press ⌘C';
-      }
-      setTimeout(() => (flag.textContent = ''), 2600);
-    };
   }
 
   function drawLeaderboard() {
@@ -588,10 +296,7 @@ export function renderCustomers(root, preselectId) {
       .join('');
 
     root.querySelectorAll('.leader__row').forEach((b) => {
-      b.onclick = () => {
-        selectHome(b.dataset.id);
-        root.querySelector('.ctable-wrap')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      };
+      b.onclick = () => openCustomer(HOMES.find((h) => h.id === b.dataset.id));
     });
   }
 
@@ -619,42 +324,40 @@ export function renderCustomers(root, preselectId) {
     : 'Data centre programme: off';
 
   drawRows();
-  // A drill-down from the dashboard names the household; otherwise take the top row.
-  const preselect = preselectId && HOMES.some((h) => h.id === preselectId);
-  if (preselect && !pool().some((h) => h.id === preselectId)) {
-    state.filter = 'all';
-    root
-      .querySelectorAll('#c-filter button')
-      .forEach((x) => x.classList.toggle('is-on', x.dataset.f === 'all'));
-    drawRows();
-  }
-  selectHome(preselect ? preselectId : pool()[0].id);
-  if (preselect) {
-    root.querySelector('#c-rows tr.is-sel')?.scrollIntoView({ block: 'center' });
-  }
   drawLeaderboard();
 
-  return null;
+  // A drill-down from the dashboard or Programs names a household: open it.
+  const preselect = preselectId && HOMES.find((h) => h.id === preselectId);
+  if (preselect) {
+    state.selectedId = preselect.id;
+    openCustomer(preselect);
+  }
+
+  return () => closeCustomer();
 }
 
-// ── why this recommendation ─────────────────────────────────────────────────
-// Double-clicking a row opens the audit trail: every measure in the catalogue,
-// whether the household was eligible, and what the return did or did not do.
+// ── the full case for one household ─────────────────────────────────────────
+// Everything that used to sit in a side column now opens here on double-click:
+// the recommendation and why it won, the value stack and what comes next, what
+// we rejected, the operator note, and a message drafted for whichever benefit
+// lands.
 
-let whyCleanup = null;
+let cardCleanup = null;
 
-function closeWhy() {
-  whyCleanup?.();
-  whyCleanup = null;
+function closeCustomer() {
+  cardCleanup?.();
+  cardCleanup = null;
 }
 
-function openWhy(home) {
+function openCustomer(home) {
   if (!home) return;
-  closeWhy();
+  closeCustomer();
 
-  const rows = explainFor(home);
-  const { top, prerequisite } = rankMeasures(home);
-  const stack = stackFor(home);
+  const { ranked, belowBar, prerequisite, top } = rankMeasures(home);
+  const b = benefitsFor(home);
+  const ins = operatorInsight(home);
+  const checks = explainFor(home);
+  const state = { angle: 'roi' };
 
   const badge = (v) =>
     ({
@@ -673,10 +376,12 @@ function openWhy(home) {
           <h2 class="dossier__addr">${esc(home.address)}</h2>
           <div class="dossier__meta">${esc(home.neighborhood)} · built ${
     home.yearBuilt
-  } · ${home.panelAmps} A · ${num(home.sqft)} sq ft</div>
+  } · ${home.panelAmps} A · ${num(home.netKwh)} kWh/yr · ${
+    home.flexKw
+  } kW flexible</div>
           <div style="margin-top:9px">
-            <span class="tag ${top ? 'tag--ready' : 'tag--muted'}">${
-    top ? `We recommend: ${esc(top.label)}` : 'Nothing clears the return floor'
+            <span class="tag ${home.ready ? 'tag--ready' : 'tag--upgrade'}">${
+    home.ready ? 'Ready today' : 'Upgrade first'
   }</span>
           </div>
         </div>
@@ -684,47 +389,102 @@ function openWhy(home) {
       </header>
 
       <div class="dossier__body">
-        ${
-          top
-            ? `<section>
-                 <div class="sec__title">Why this one</div>
-                 <div class="ledger">
-                   <div class="ledger__row"><span>Net cost after incentives</span><span>${usd(
-                     netCapex(top)
-                   )}</span></div>
-                   <div class="ledger__row"><span>Saved on its own bills</span><span>${usd(
-                     top.baseCash
-                   )}/yr</span></div>
-                   <div class="ledger__row"><span>Earned from programmes</span><span>${usd(
-                     top.cash - top.baseCash
-                   )}/yr</span></div>
-                   <div class="ledger__row is-total"><span>Return</span><span>${pct(
-                     roiOf(top),
-                     0
-                   )} · ${paybackOf(top)?.toFixed(1) ?? '—'} yr</span></div>
-                 </div>
-                 <p class="nobar">${esc(top.why)}</p>
-               </section>`
-            : ''
-        }
+        <section>
+          <div class="sec__title">Most valuable next move</div>
+          ${
+            top
+              ? `<div class="reco">
+                   <div class="reco__top">
+                     <span class="reco__icon">${icon(top.key)}</span>
+                     <div>
+                       <div class="reco__label">${esc(top.label)}</div>
+                       <div class="reco__why">${esc(top.why)}</div>
+                     </div>
+                   </div>
+                   <div class="reco__nums">
+                     <div><div class="stat__label">Net cost</div><div class="stat__value">${usd(
+                       netCapex(top)
+                     )}</div><div class="stat__foot">after ${usd(
+                  top.incentive
+                )} incentive</div></div>
+                     <div><div class="stat__label">Annual value</div><div class="stat__value">${usd(
+                       top.cash
+                     )}</div><div class="stat__foot">bill + programmes</div></div>
+                     <div><div class="stat__label">Return</div><div class="stat__value">${pct(
+                       roiOf(top),
+                       0
+                     )}</div><div class="stat__foot">${
+                  paybackOf(top)?.toFixed(1) ?? '—'
+                } yr payback</div></div>
+                   </div>
+                 </div>`
+              : `<p class="nobar">Nothing on this property clears the return bar today${
+                  dcProgramEnabled()
+                    ? ''
+                    : ' — switch the data centre programme on and it will'
+                }.</p>`
+          }
+          ${
+            prerequisite
+              ? `<div class="prereq"><b>Prerequisite:</b> ${esc(
+                  prerequisite.label
+                )} · ${usd(netCapex(prerequisite))} net. ${esc(prerequisite.why)}</div>`
+              : ''
+          }
+        </section>
 
-        ${
-          prerequisite
-            ? `<div class="prereq"><b>Before anything:</b> ${esc(
-                prerequisite.label
-              )} · ${usd(
-                netCapex(prerequisite)
-              )} net. The ${home.panelAmps} A service is at ${pct(
-                home.utilProjected,
-                0
-              )} of usable capacity once electrified.</div>`
-            : ''
-        }
+        <section>
+          <div class="sec__title">Value stack</div>
+          ${stackPanel(home)}
+        </section>
+
+        <div class="grid grid--2">
+          <section>
+            <div class="sec__title">Also worth doing</div>
+            <div class="ledger">
+              ${
+                ranked.length > 1
+                  ? ranked
+                      .slice(1, 4)
+                      .map(
+                        (m) => `
+                <div class="ledger__row">
+                  <span>${esc(m.short)} · ${usd(netCapex(m))} net</span>
+                  <span>${pct(roiOf(m), 0)} · ${
+                          paybackOf(m)?.toFixed(1) ?? '—'
+                        } yr</span>
+                </div>`
+                      )
+                      .join('')
+                  : '<div class="ledger__row"><span>Nothing else clears the bar</span><span>—</span></div>'
+              }
+            </div>
+          </section>
+
+          <section>
+            <div class="sec__title">Not justified on return today</div>
+            <div class="ledger">
+              ${
+                belowBar.length
+                  ? belowBar
+                      .map(
+                        (m) => `
+                <div class="ledger__row is-neg">
+                  <span>${esc(m.short)} · ${usd(netCapex(m))} net</span>
+                  <span>${pct(roiOf(m), 0)}</span>
+                </div>`
+                      )
+                      .join('')
+                  : '<div class="ledger__row"><span>Nothing eligible falls short</span><span>—</span></div>'
+              }
+            </div>
+          </section>
+        </div>
 
         <section>
           <div class="sec__title">Every measure we checked</div>
           <div class="whytable">
-            ${rows
+            ${checks
               .map(
                 (r) => `
               <div class="whyrow ${r.eligible ? '' : 'is-out'}">
@@ -741,24 +501,78 @@ function openWhy(home) {
               )
               .join('')}
           </div>
-          <p class="nobar">A measure is only recommended when the household is eligible
-             for it and the return clears ${pct(ROI_FLOOR, 0)}.</p>
+          <p class="nobar">A measure is recommended only when the household is eligible
+             and the return clears ${pct(ROI_FLOOR, 0)}.</p>
         </section>
 
         <section>
-          <div class="sec__title">What pays for it</div>
-          <div class="ledger">
-            ${stack.annual
-              .map(
-                (row) =>
-                  `<div class="ledger__row"><span>${esc(row.label)}${
-                    row.note ? ` · ${esc(row.note)}` : ''
-                  }</span><span>${usd(row.amount)}/yr</span></div>`
-              )
-              .join('')}
-            <div class="ledger__row is-total"><span>Total</span><span>${usd(
-              stack.total
-            )}/yr</span></div>
+          <div class="sec__title">Grid operator note</div>
+          <div style="display:flex;gap:9px;align-items:flex-start">
+            <span class="tag ${insightTagClass(ins.level)}">${esc(
+    ins.level[0].toUpperCase() + ins.level.slice(1)
+  )}</span>
+            <div>
+              <div style="font-size:var(--fs-md);font-weight:var(--fw-bold)">${esc(
+                ins.headline
+              )}</div>
+              <div class="nobar">${esc(ins.detail)}</div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <div class="sec__title">Why they would say yes</div>
+          <div class="benefits">
+            <div class="benefit">
+              <div class="benefit__label">Return</div>
+              <div class="benefit__value">${pct(b.roi.bundleRoi, 0)}</div>
+              <div class="benefit__foot">${usd(b.roi.bundleCash)}/yr on ${usd(
+    b.roi.bundleCapex
+  )} · ${b.roi.bundlePayback?.toFixed(1) ?? '—'} yr</div>
+            </div>
+            <div class="benefit">
+              <div class="benefit__label">Environment</div>
+              <div class="benefit__value">${b.environmental.co2TonsPerYear} t</div>
+              <div class="benefit__foot">per year · ${usd(
+                b.environmental.carbonValue
+              )} at social cost</div>
+            </div>
+            <div class="benefit">
+              <div class="benefit__label">Resilience</div>
+              <div class="benefit__value">${b.resilience.backupHours || '0'} h</div>
+              <div class="benefit__foot">${esc(b.resilience.note)}</div>
+            </div>
+            <div class="benefit">
+              <div class="benefit__label">Community</div>
+              <div class="benefit__value">${usd(b.community.localLabour)}</div>
+              <div class="benefit__foot">local labour · ${usd(
+                b.community.flexRevenueYr
+              )}/yr flexibility revenue</div>
+            </div>
+            <div class="benefit">
+              <div class="benefit__label">Standing</div>
+              <div class="benefit__value">#${num(home.hoodRank)}</div>
+              <div class="benefit__foot">of ${num(home.hoodCount)} in ${esc(
+    home.neighborhood
+  )} · #${num(home.rank)} territory-wide</div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <div class="sec__title">Personalised outreach</div>
+          <div class="filters__row" id="m-angles">
+            ${ANGLES.map(
+              (a) =>
+                `<button class="chip ${
+                  a.id === state.angle ? 'is-on' : ''
+                }" data-angle="${a.id}" title="${esc(a.hint)}">${esc(a.label)}</button>`
+            ).join('')}
+          </div>
+          <textarea class="message" id="m-message" rows="10" spellcheck="false"></textarea>
+          <div style="display:flex;gap:9px;margin-top:10px;align-items:center">
+            <button class="btn" id="m-copy">Copy message</button>
+            <span class="card__note" id="m-copied"></span>
           </div>
         </section>
       </div>
@@ -768,15 +582,38 @@ function openWhy(home) {
   document.body.appendChild(modal);
   document.body.style.overflow = 'hidden';
 
-  modal.querySelector('.dossier__close').onclick = closeWhy;
+  const msg = modal.querySelector('#m-message');
+  msg.value = composeMessage(home, state.angle);
+  modal.querySelectorAll('#m-angles .chip').forEach((chip) => {
+    chip.onclick = () => {
+      state.angle = chip.dataset.angle;
+      modal
+        .querySelectorAll('#m-angles .chip')
+        .forEach((c) => c.classList.toggle('is-on', c === chip));
+      msg.value = composeMessage(home, state.angle);
+    };
+  });
+  modal.querySelector('#m-copy').onclick = async () => {
+    const flag = modal.querySelector('#m-copied');
+    try {
+      await navigator.clipboard.writeText(msg.value);
+      flag.textContent = 'Copied to clipboard';
+    } catch {
+      msg.select();
+      flag.textContent = 'Selected — press ⌘C';
+    }
+    setTimeout(() => (flag.textContent = ''), 2600);
+  };
+
+  modal.querySelector('.dossier__close').onclick = closeCustomer;
   modal.onclick = (e) => {
-    if (e.target === modal) closeWhy();
+    if (e.target === modal) closeCustomer();
   };
   const onKey = (e) => {
-    if (e.key === 'Escape') closeWhy();
+    if (e.key === 'Escape') closeCustomer();
   };
   document.addEventListener('keydown', onKey);
-  whyCleanup = () => {
+  cardCleanup = () => {
     document.removeEventListener('keydown', onKey);
     modal.remove();
     document.body.style.overflow = '';

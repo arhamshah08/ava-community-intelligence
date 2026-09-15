@@ -1176,3 +1176,9 @@ table.tbl th.num { text-align: right; }
 .nextrung__need { font-size: var(--fs-sm); line-height: var(--lh-body); margin-top: 3px; }
 
 .ctable__next { font-size: var(--fs-sm); }
+
+/* Customers is a single full-width list now; the detail opens on double-click. */
+.ctable-wrap--full { max-height: none; }
+.ctable-wrap--full .ctable td { padding-top: 11px; padding-bottom: 11px; }
+.ctable-wrap--full .ctable .stackbar { min-width: 130px; }
+.ctable-wrap--full .ctable__next { white-space: nowrap; }
