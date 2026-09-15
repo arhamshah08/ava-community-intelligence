@@ -71,6 +71,10 @@ message generator across five benefit angles; leaderboard.
    designer merged two note strips into one and moved the sampling caveat to fineprint;
    About and the layer tabs lost their trailing explainer paragraphs. Keep it this lean.
 
+## Repo
+
+**https://github.com/arhamshah08/ava-community-intelligence** (public). Branch `main`.
+
 ## Deploy
 
 Public on Vercel (no gate): **https://ava-community-intelligence.vercel.app**
@@ -78,5 +82,10 @@ Redeploy with `vercel --prod --yes` from the project root. Account `arhamshah08`
 
 ## Next step
 
-Not yet under git and not pushed to GitHub — `BUILD.md` asked for a public
-`gh repo create`, which is held pending Arham's go-ahead since it publishes the repo.
+Nothing outstanding. Repo is public, site is live and unguarded (Arham confirmed no
+password needed).
+
+Open question Arham has not answered: the heat pump only reaches the recommended list
+because of two added assumptions — a $6,500 stacked CA incentive (TECH + BayREN + 25C)
+and a $3,000 capex credit where an ageing AC would have been replaced anyway. Without
+them it sits at ~2% ROI and never surfaces. Confirm those are defensible before pitching.
