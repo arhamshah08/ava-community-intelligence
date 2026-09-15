@@ -43,30 +43,22 @@ export function renderDashboard(root) {
 
     // Change against the other state, so the effect of the toggle is obvious
     // without reading the table underneath.
-    const delta = (current, otherVal, fmt) => {
+    // Just the arrow and the percentage. The comparison table below carries
+    // the actual before/after figures, so restating them here is noise.
+    const delta = (current, otherVal) => {
       const diff = current - otherVal;
+      if (diff === 0) return '<span class="delta delta--flat">no change</span>';
       const up = diff > 0;
       const share = otherVal > 0 ? Math.abs(diff) / otherVal : null;
-      const chip = diff === 0
-        ? '<span class="delta delta--flat">no change</span>'
-        : `<span class="delta delta--${up ? 'up' : 'down'}">${
-            up ? '\u2191' : '\u2193'
-          } ${share == null ? fmt(Math.abs(diff)) : pct(share, 0)}</span>`;
-      return `${chip}<span class="delta__ref">${
-        live ? 'without' : 'with'
-      } the programme: ${fmt(otherVal)}</span>`;
+      return `<span class="delta delta--${up ? 'up' : 'down'}">${
+        up ? '\u2191' : '\u2193'
+      } ${share == null ? num(Math.abs(diff)) : pct(share, 0)}</span>`;
     };
 
     page.innerHTML = `
       <header class="page__head">
         <div class="page__eyebrow">Community</div>
         <h1 class="page__title">What this community is worth</h1>
-        <p class="page__sub">
-          ${num(
-            r.homes
-          )} households in Ava territory. Switch the data centre programme off to
-          see what the same homes are worth with nobody buying their flexibility.
-        </p>
       </header>
 
       <div class="progbar">
@@ -88,24 +80,24 @@ export function renderDashboard(root) {
         <div class="kpi">
           <div class="kpi__label">A household earns</div>
           <div class="kpi__value">${usd(r.avgEarnings)}<span>/yr</span></div>
-          <div class="kpi__foot">${delta(r.avgEarnings, other.avgEarnings, usd)}</div>
+          <div class="kpi__foot">${delta(r.avgEarnings, other.avgEarnings)}</div>
         </div>
         <div class="kpi">
           <div class="kpi__label">The community earns</div>
           <div class="kpi__value">${usdShort(r.earnings)}<span>/yr</span></div>
-          <div class="kpi__foot">${delta(r.earnings, other.earnings, usdShort)}</div>
+          <div class="kpi__foot">${delta(r.earnings, other.earnings)}</div>
         </div>
         <div class="kpi">
           <div class="kpi__label">Homes with an upgrade that pays</div>
           <div class="kpi__value">${num(r.withOffer)}<span> of ${num(
       r.homes
     )}</span></div>
-          <div class="kpi__foot">${delta(r.withOffer, other.withOffer, num)}</div>
+          <div class="kpi__foot">${delta(r.withOffer, other.withOffer)}</div>
         </div>
         <div class="kpi">
           <div class="kpi__label">Homes gaining outage cover</div>
           <div class="kpi__value">${num(r.gainsBackup)}<span> × ${BATTERY_HOURS} h</span></div>
-          <div class="kpi__foot">${delta(r.gainsBackup, other.gainsBackup, num)}</div>
+          <div class="kpi__foot">${delta(r.gainsBackup, other.gainsBackup)}</div>
         </div>
       </div>
 
@@ -113,7 +105,6 @@ export function renderDashboard(root) {
         <section class="card">
           <div class="card__head">
             <span class="card__title">Before and after</span>
-            <span class="card__note">same ${num(r.homes)} homes, both ways</span>
           </div>
           <div class="card__body" style="padding-top:8px">
             <table class="tbl ba">
@@ -149,22 +140,19 @@ export function renderDashboard(root) {
                   .join('')}
               </tbody>
             </table>
-            <p class="dash-note">
-              Without a data centre buying flexibility, <b>${num(
-                off.homes - off.withOffer
-              )}</b> households have no upgrade that pays for itself, and a battery is
-              financeable for only <b>${num(off.gainsBackup)}</b> of them.
-            </p>
           </div>
         </section>
 
         <section class="card">
           <div class="card__head">
             <span class="card__title">By neighbourhood</span>
-            <span class="card__note">average earnings per household</span>
+            <span class="card__note">average per household</span>
           </div>
           <div class="card__body">
             <div class="hoodlist">
+              <div class="hoodrow hoodrow--head">
+                <span>Neighbourhood</span><span></span><span>Earns</span><span>Ready</span>
+              </div>
               ${r.hoods
                 .map(
                   (h) => `
@@ -174,9 +162,7 @@ export function renderDashboard(root) {
                     (h.avgEarnings / maxAvg) * 100
                   }%"></span></span>
                   <span class="hoodrow__val">${usd(h.avgEarnings)}</span>
-                  <span class="hoodrow__sub">${num(h.ready)} of ${num(
-                    h.homes
-                  )} ready to electrify today</span>
+                  <span class="hoodrow__ready">${num(h.ready)}/${num(h.homes)}</span>
                 </div>`
                 )
                 .join('')}
@@ -188,7 +174,6 @@ export function renderDashboard(root) {
       <section class="card" style="margin-top:16px">
         <div class="card__head">
           <span class="card__title">Households</span>
-          <span class="card__note">highest earning first</span>
         </div>
         <div class="card__body" style="padding-top:8px">
           <div class="drill">
@@ -200,9 +185,7 @@ export function renderDashboard(root) {
               <button class="drill__row" data-id="${h.id}">
                 <span class="drill__who">
                   <b>${esc(h.address)}</b>
-                  <small>${esc(h.neighborhood)}${
-                  top ? ` · start with a ${esc(top.phrase)}` : ' · nothing pays yet'
-                }</small>
+                  <small>${top ? esc(top.short) : 'Nothing pays yet'}</small>
                 </span>
                 <span class="drill__val">${usd(b.totalCash)}<small>/yr</small></span>
                 <span class="drill__go">Open</span>
@@ -210,11 +193,9 @@ export function renderDashboard(root) {
               })
               .join('')}
           </div>
-          <p class="dash-note" style="margin-top:12px">
-            <a href="#/customers" class="dash-link">See all ${num(
-              r.homes
-            )} households</a>
-          </p>
+          <a href="#/customers" class="dash-link" style="display:inline-block;margin-top:12px">All ${num(
+            r.homes
+          )} households</a>
         </div>
       </section>
     `;

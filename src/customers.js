@@ -119,10 +119,7 @@ export function renderCustomers(root, preselectId) {
       <header class="page__head">
         <div class="page__eyebrow">Customers</div>
         <h1 class="page__title">What to offer each household, and why they will say yes</h1>
-        <p class="page__sub">
-          Every row is scored from the three intelligence layers. Double-click a household
-          to open its full case: the recommendation, the value stack, and what comes next.
-        </p>
+        <p class="page__sub">Double-click a household for its full case.</p>
       </header>
 
       <div class="toolbar">
@@ -167,7 +164,6 @@ export function renderCustomers(root, preselectId) {
       <section class="card" style="margin-top:16px">
         <div class="card__head">
           <span class="card__title">Sustainability leaderboard</span>
-          <span class="card__note">electrification progress, territory-wide</span>
         </div>
         <div class="card__body">
           <div class="leader" id="c-leader"></div>
@@ -235,9 +231,9 @@ export function renderCustomers(root, preselectId) {
     const list = pool();
     // One scale across the visible rows, so the bars are comparable.
     const maxStack = Math.max(1, ...list.map((h) => ladderFor(h).total));
-    root.querySelector('#c-count').textContent = `showing ${num(
-      list.length
-    )} of ${num(HOMES.length)} · double-click for the full case`;
+    root.querySelector('#c-count').textContent = `${num(list.length)} of ${num(
+      HOMES.length
+    )}`;
 
     rowsEl.innerHTML = list
       .map((h) => {
@@ -247,9 +243,6 @@ export function renderCustomers(root, preselectId) {
         <tr data-id="${h.id}" class="${h.id === state.selectedId ? 'is-sel' : ''}">
           <td>
             <div class="ctable__addr">${esc(h.address)}</div>
-            <div class="ctable__sub">${esc(h.neighborhood)} · ${num(
-          h.netKwh
-        )} kWh/yr · ${h.flexKw} kW flexible</div>
           </td>
           <td><div class="facets">${assetStrip(h)}</div></td>
           <td>
@@ -285,10 +278,7 @@ export function renderCustomers(root, preselectId) {
         (h, i) => `
       <button class="leader__row" data-id="${h.id}">
         <span class="leader__rank">${i + 1}</span>
-        <span class="leader__who">
-          <b>${esc(h.address)}</b>
-          <small>${esc(h.neighborhood)}</small>
-        </span>
+        <span class="leader__who"><b>${esc(h.address)}</b></span>
         <span class="facets">${assetStrip(h)}</span>
         <span class="leader__bar"><span style="width:${(h.score / max) * 100}%"></span></span>
         <span class="leader__score">${h.score}</span>
@@ -405,18 +395,14 @@ function openCustomer(home) {
                    <div class="reco__nums">
                      <div><div class="stat__label">Net cost</div><div class="stat__value">${usd(
                        netCapex(top)
-                     )}</div><div class="stat__foot">after ${usd(
-                  top.incentive
-                )} incentive</div></div>
+                     )}</div></div>
                      <div><div class="stat__label">Annual value</div><div class="stat__value">${usd(
                        top.cash
-                     )}</div><div class="stat__foot">bill + programmes</div></div>
+                     )}</div></div>
                      <div><div class="stat__label">Return</div><div class="stat__value">${pct(
                        roiOf(top),
                        0
-                     )}</div><div class="stat__foot">${
-                  paybackOf(top)?.toFixed(1) ?? '—'
-                } yr payback</div></div>
+                     )}</div></div>
                    </div>
                    <button class="reco__shop" data-products="${top.key}">
                      See products you can buy →
@@ -601,17 +587,13 @@ function openCustomer(home) {
     const extra = cat.accessories;
     shop.innerHTML = `
       <div class="sec__title">${esc(cat.title)}</div>
-      <p class="nobar">${esc(sizingNote(key, home))}</p>
       <div class="prodlist">
         ${cat.items
           .map(
             (it) => `
           <div class="prod">
-            <div class="prod__main">
-              <div class="prod__name">${esc(it.brand)} · ${esc(it.model)}</div>
-              <div class="prod__spec">${esc(it.spec)}</div>
-              ${it.note ? `<div class="prod__note">${esc(it.note)}</div>` : ''}
-            </div>
+            <div class="prod__name">${esc(it.brand)} · ${esc(it.model)}</div>
+            <div class="prod__spec">${esc(it.spec)}</div>
             <div class="prod__price">${price(it, cat)}<small>${esc(
               cat.unit
             )}</small></div>
@@ -627,10 +609,8 @@ function openCustomer(home) {
                  .map(
                    (it) => `
                  <div class="prod">
-                   <div class="prod__main">
-                     <div class="prod__name">${esc(it.brand)} · ${esc(it.model)}</div>
-                     <div class="prod__spec">${esc(it.spec)}</div>
-                   </div>
+                   <div class="prod__name">${esc(it.brand)} · ${esc(it.model)}</div>
+                   <div class="prod__spec">${esc(it.spec)}</div>
                    <div class="prod__price">${usd(it.from)}–${usd(
                      it.to
                    )}<small>hardware</small></div>
@@ -640,10 +620,8 @@ function openCustomer(home) {
              </div>`
           : ''
       }
-      <p class="nobar">Manufacturers and product lines are real; prices are indicative
-         installed ranges for the Bay Area, not quotes. Confirm sizing and price with an
-         installer before committing.
-         <button class="chip" id="m-shop-close">Hide products</button></p>
+      <p class="nobar">Indicative installed ranges, not quotes.
+         <button class="chip" id="m-shop-close">Hide</button></p>
     `;
     shop.querySelector('#m-shop-close').onclick = () => {
       shop.innerHTML = '';

@@ -161,11 +161,7 @@ export function renderGreenButtonTab(root) {
       <header class="page__head">
         <div class="page__eyebrow">Smart meter data</div>
         <h1 class="page__title">Smart meter data disaggregation</h1>
-        <p class="page__sub">
-          One meter channel, ${INTERVALS} fifteen-minute intervals. Disaggregation separates the
-          four loads with distinguishable signatures from the always-on floor, which is what
-          turns "this house uses ${num(dailyKwh, 1)} kWh a day" into a specific flexibility offer.
-        </p>
+        <p class="page__sub">One meter channel, ${INTERVALS} fifteen-minute intervals.</p>
       </header>
 
       <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
@@ -205,7 +201,6 @@ export function renderGreenButtonTab(root) {
           <div class="card"><div class="card__body">
             <div class="stat__label">${label}</div>
             <div class="stat__value">${value}</div>
-            <div class="stat__foot">${foot}</div>
           </div></div>`
           )
           .join('')}

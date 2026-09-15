@@ -22,10 +22,10 @@ const TABS = [
   { id: 'map', label: 'Map', group: 'Overview', render: renderMap, flush: true },
   { id: 'programs', label: 'Programs', group: 'Overview', render: renderPrograms },
   { id: 'customers', label: 'Customers', group: 'Overview', render: renderCustomers },
+  { id: 'communities', label: 'Communities', group: 'Overview', render: renderCommunities, flush: true },
   { id: 'permits', label: 'Permits', group: 'Intelligence', render: renderPermitsTab },
   { id: 'solar', label: 'Solar imagery', group: 'Intelligence', render: renderSolarTab },
   { id: 'green-button', label: 'Smart meter data', group: 'Intelligence', render: renderGreenButtonTab },
-  { id: 'communities', label: 'Communities', group: 'Context', render: renderCommunities, flush: true },
   { id: 'about', label: 'About', group: 'Context', render: renderAbout },
 ];
 

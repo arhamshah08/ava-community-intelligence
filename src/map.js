@@ -101,8 +101,8 @@ function renderDesignerPage(body) {
   page.className = 'page';
   page.innerHTML = `
     <header class="page__head">
-      <div class="page__eyebrow">Step 1 · the ask</div>
-      <h1 class="page__title">What does this campus need, and can the neighbourhood sell it?</h1>
+      <div class="page__eyebrow">Design</div>
+      <h1 class="page__title">What does this campus need?</h1>
     </header>
     <div id="designer-slot"></div>
   `;
@@ -122,7 +122,7 @@ function renderCommunity(body) {
       <section class="map-panel map-panel--head">
         <div class="page__eyebrow">Ava Community Energy · Oakland</div>
         <h1>Who can deliver it</h1>
-        <p>Every rooftop in the synthetic territory, scored against the panel capacity it already has.</p>
+
 
         <div class="legend">
           <div class="legend__row">

@@ -59,35 +59,24 @@ export function renderPrograms(root) {
       <header class="page__head">
         <div class="page__eyebrow">Programs</div>
         <h1 class="page__title">Stack the programmes, and see what a household is worth</h1>
-        <p class="page__sub">
-          Mix the value streams below. Revenue programmes pay a household every year;
-          capex programmes lower what it has to put in. Every number on the other tabs
-          follows this mix.
-        </p>
       </header>
 
       <div class="kpis" style="margin-bottom:22px">
         <div class="kpi">
           <div class="kpi__label">A household earns</div>
           <div class="kpi__value">${usd(r.avgEarnings)}<span>/yr</span></div>
-          <div class="kpi__foot">${num(
-            [...PROGRAMS].filter((p) => programOn(p.id)).length
-          )} of ${num(PROGRAMS.length)} programmes running</div>
         </div>
         <div class="kpi">
           <div class="kpi__label">The community earns</div>
           <div class="kpi__value">${usdShort(r.earnings)}<span>/yr</span></div>
-          <div class="kpi__foot">across ${num(r.homes)} households</div>
         </div>
         <div class="kpi">
           <div class="kpi__label">Homes with an upgrade that pays</div>
           <div class="kpi__value">${num(r.withOffer)}<span> of ${num(r.homes)}</span></div>
-          <div class="kpi__foot">clearing the ${pct(0.06, 0)} return floor</div>
         </div>
         <div class="kpi">
           <div class="kpi__label">Homes gaining outage cover</div>
           <div class="kpi__value">${num(r.gainsBackup)}<span> × 18 h</span></div>
-          <div class="kpi__foot">storage that pencils in this mix</div>
         </div>
       </div>
 
@@ -95,7 +84,6 @@ export function renderPrograms(root) {
         <section class="card">
           <div class="card__head">
             <span class="card__title">Programmes</span>
-            <span class="card__note">mix them</span>
           </div>
           <div class="card__body" style="padding-top:8px">
             <div class="proglist">
@@ -103,15 +91,14 @@ export function renderPrograms(root) {
                 const on = programOn(p.id);
                 const c = contrib.get(p.id) || 0;
                 return `
-                <div class="progrow ${on ? 'is-on' : ''}">
+                <div class="progrow ${on ? 'is-on' : ''}" title="${esc(p.blurb)}">
                   <button class="switch ${on ? 'is-on' : ''}" data-id="${p.id}"
                           role="switch" aria-checked="${on}" aria-label="${esc(p.name)}">
                     <span></span>
                   </button>
                   <div class="progrow__main">
                     <div class="progrow__name">${esc(p.name)}</div>
-                    <div class="progrow__blurb">${esc(p.blurb)}</div>
-                  </div>
+                    </div>
                   <div class="progrow__nums">
                     <div class="progrow__unit">${esc(p.unit)}</div>
                     <div class="progrow__eff">${
@@ -127,12 +114,8 @@ export function renderPrograms(root) {
             </div>
             ${
               programOn('flex') && programOn('dr')
-                ? `<p class="dash-note">Both flexibility programmes are running, so wholesale
-                   demand response is paid at ${pct(
-                     PROGRAM_RATES.drHaircut,
-                     0
-                   )} — the same kW cannot be
-                   sold twice at full value.</p>`
+                ? `<p class="dash-note">The same kW cannot sell twice at full value, so
+                   wholesale DR is paid at ${pct(PROGRAM_RATES.drHaircut, 0)}.</p>`
                 : ''
             }
           </div>
@@ -141,7 +124,6 @@ export function renderPrograms(root) {
         <section class="card">
           <div class="card__head">
             <span class="card__title">Where the money comes from</span>
-            <span class="card__note">community, per year</span>
           </div>
           <div class="card__body">
             <div class="hoodlist">
@@ -155,10 +137,7 @@ export function renderPrograms(root) {
                     (c / maxContrib) * 100
                   }%"></span></span>
                   <span class="hoodrow__val">${usdShort(c)}</span>
-                  <span class="hoodrow__sub">${pct(
-                    total ? c / total : 0,
-                    0
-                  )} of what the community earns</span>
+                  <span class="hoodrow__ready">${pct(total ? c / total : 0, 0)}</span>
                 </div>`;
                 })
                 .join('')}
@@ -189,9 +168,7 @@ export function renderPrograms(root) {
               <button class="drill__row" data-home="${h.id}">
                 <span class="drill__who">
                   <b>${esc(h.address)}</b>
-                  <small>${st.annual
-                    .map((x) => `${esc(x.label)} ${usd(x.amount)}`)
-                    .join(' + ')}</small>
+                  <small>${st.annual.length} streams</small>
                 </span>
                 <span class="drill__val">${usd(st.total)}<small>/yr</small></span>
                 <span class="drill__go">Open</span>

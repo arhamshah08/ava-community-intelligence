@@ -523,7 +523,7 @@ export const PROGRAMS = [
     pays: 'revenue',
     unit: `$${PROGRAM_RATES.flexPerKwYr}/kW-yr`,
     blurb:
-      'A data centre pays for controllable load on its own feeder, so it can energise without rebuilding the wire.',
+      'Pays for controllable load on the local feeder.',
     defaultOn: true,
   },
   {
@@ -532,7 +532,7 @@ export const PROGRAMS = [
     pays: 'revenue',
     unit: `$${PROGRAM_RATES.drPerKwYr}/kW-yr`,
     blurb:
-      'Statewide CAISO events. Stacks on the same kW, but at a discount once that kW is already committed locally.',
+      'Statewide CAISO events, stacked at a discount.',
     defaultOn: false,
   },
   {
@@ -541,7 +541,7 @@ export const PROGRAMS = [
     pays: 'revenue',
     unit: `$${PROGRAM_RATES.lcfsPerEvYr}/yr per EV`,
     blurb:
-      'LCFS credits for charging an electric vehicle on California electricity. Needs an EV on the property.',
+      'Credits for charging an EV. Needs an EV on site.',
     defaultOn: false,
   },
   {
@@ -550,7 +550,7 @@ export const PROGRAMS = [
     pays: 'capex',
     unit: `+${Math.round(PROGRAM_RATES.eeIncentiveUplift * 100)}% incentive`,
     blurb:
-      'Utility efficiency rebates on qualifying equipment. Does not pay a household anything a year — it lowers what they have to put in.',
+      'Lowers upfront cost rather than paying a yearly amount.',
     defaultOn: false,
   },
   {
@@ -559,7 +559,7 @@ export const PROGRAMS = [
     pays: 'capex',
     unit: `+$${PROGRAM_RATES.sgipBattery.toLocaleString()} on storage`,
     blurb:
-      'SGIP storage incentive. Only touches batteries, but it is large enough to decide whether one pencils at all.',
+      'Storage only, but large enough to decide whether a battery pencils.',
     defaultOn: false,
   },
 ];

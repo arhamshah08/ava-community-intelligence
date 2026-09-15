@@ -103,11 +103,7 @@ export function renderSolarTab(root) {
       <header class="page__head">
         <div class="page__eyebrow">Solar imagery</div>
         <h1 class="page__title">Rooftop solar detection from imagery</h1>
-        <p class="page__sub">
-          A parcel-resolution sweep over one West Oakland block group. Every rooftop is
-          examined; the ones carrying PV are shaded and scored. Imagery is the only layer
-          with complete coverage, so it is what the other two are measured against.
-        </p>
+        <p class="page__sub">A parcel-resolution sweep over one West Oakland block group.</p>
       </header>
 
       <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px">
@@ -145,7 +141,6 @@ export function renderSolarTab(root) {
           <div class="card"><div class="card__body">
             <div class="stat__label">${label}</div>
             <div class="stat__value">${value}</div>
-            <div class="stat__foot">${foot}</div>
           </div></div>`
           )
           .join('')}

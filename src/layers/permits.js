@@ -141,18 +141,14 @@ export function renderPermitsTab(root) {
       <header class="page__head">
         <div class="page__eyebrow">Permits</div>
         <h1 class="page__title">Building permit extraction</h1>
-        <p class="page__sub">
-          ${num(stats.total)} permits in the trailing feed. Two classes out of six carry
-          electrification signal; the rest are filtered out before anything is parsed.
-          Select a permit to run the pipeline against it.
-        </p>
+        <p class="page__sub">Select a permit to run the pipeline against it.</p>
       </header>
 
       <div class="grid grid--4" style="margin-bottom:16px">
         ${[
-          ['Permits in feed', num(stats.total), 'trailing 24 months'],
+          ['Permits in feed', num(stats.total), ''],
           ['Passed filtering', num(stats.relevant), `${stats.hvac} HVAC · ${stats.electrical} electrical`],
-          ['Dropped', num(stats.dropped), 'plumbing, roofing, demo, grading'],
+          ['Dropped', num(stats.dropped), ''],
           ['Addresses covered', num(stats.homesCovered), `of ${num(PORTFOLIO.count)} homes`],
         ]
           .map(
@@ -160,7 +156,6 @@ export function renderPermitsTab(root) {
           <div class="card"><div class="card__body">
             <div class="stat__label">${label}</div>
             <div class="stat__value">${value}</div>
-            <div class="stat__foot">${foot}</div>
           </div></div>`
           )
           .join('')}
@@ -204,9 +199,9 @@ export function renderPermitsTab(root) {
             <div class="card__body">
               <div class="cov">
                 ${[
-                  ['Permit-derived attributes (P1)', homesWithPermit, 'p1'],
-                  ['Solar imagery (P2)', PORTFOLIO.count, 'p2'],
-                  ['Smart meter intervals (P3)', PORTFOLIO.amiCount, 'p3'],
+          ['Permit-derived attributes (P1)', homesWithPermit, ''],
+          ['Solar imagery (P2)', PORTFOLIO.count, ''],
+          ['Smart meter intervals (P3)', PORTFOLIO.amiCount, ''],
                 ]
                   .map(
                     ([label, count, cls]) => `

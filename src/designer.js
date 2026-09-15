@@ -83,7 +83,6 @@ export function renderDesigner(root) {
               <span>IT load</span><b id="d-load-out">${state.itLoadMW} MW</b>
             </label>
             <input type="range" id="d-load" min="2" max="90" step="1" value="${state.itLoadMW}" />
-            <div class="field__hint" id="d-size-note"></div>
           </div>
 
           <div>
@@ -96,7 +95,6 @@ export function renderDesigner(root) {
                   }">${esc(w.label)}</button>`
               ).join('')}
             </div>
-            <p class="field__hint" id="d-workload-note" style="margin-top:8px"></p>
           </div>
 
           <div>
@@ -109,7 +107,6 @@ export function renderDesigner(root) {
                   }">${esc(d.shortName)}</button>`
               ).join('')}
             </div>
-            <p class="field__hint" id="d-site-note" style="margin-top:8px"></p>
           </div>
 
           <button class="btn btn--lg" id="d-calc">Calculate</button>
@@ -138,14 +135,7 @@ export function renderDesigner(root) {
   function syncNotes() {
     root.querySelector('#d-load-out').textContent = `${state.itLoadMW} MW`;
     const racks = Math.round((state.itLoadMW * 1000) / 12);
-    root.querySelector('#d-size-note').textContent =
-      `≈ ${num(racks)} racks at 12 kW, or ${num(
-        Math.round(state.itLoadMW * 1000 * 8.76)
-      )} MWh a year at full load.`;
-    root.querySelector('#d-workload-note').textContent = workload().note;
     const s = site();
-    root.querySelector('#d-site-note').textContent =
-      `${s.siteNote}. ${s.feeder} has ${s.feederHeadroomMW} MW of headroom.`;
   }
 
   function calculate() {
@@ -223,30 +213,18 @@ export function renderDesigner(root) {
         <div class="card"><div class="card__body">
           <div class="stat__label">Peak demand</div>
           <div class="stat__value">${num(d.peakMW, 1)}<small> MW</small></div>
-          <div class="stat__foot">${num(d.siteCapacityMW, 1)} MW installed at PUE ${
-      d.workload.pue
-    } · ${pct(d.loadFactor, 0)} load factor</div>
-        </div></div>
+                  </div></div>
         <div class="card"><div class="card__body">
           <div class="stat__label">Flexible capacity</div>
           <div class="stat__value" style="color:var(--ink)">${num(
             community.flexMW,
             1
           )}<small> MW</small></div>
-          <div class="stat__foot">≈ ${num(
-            community.ready
-          )} ready households within ${CATCHMENT_KM} km · ${num(
-      community.potentialMW,
-      1
-    )} MW if all ${num(community.households)} were upgraded</div>
-        </div></div>
+                  </div></div>
         <div class="card"><div class="card__body">
           <div class="stat__label">Call frequency</div>
           <div class="stat__value">${num(d.eventsPossible)}<small>/yr</small></div>
-          <div class="stat__foot">${num(d.eventHours)} h per event · constraint binds ${num(
-      d.bindingDays
-    )} days/yr · tariff caps calls at ${HOUSEHOLD_EVENT_CAP}/yr</div>
-        </div></div>
+                  </div></div>
       </div>
 
       ${
