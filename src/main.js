@@ -8,6 +8,7 @@ import { renderMap } from './map.js';
 import { renderCustomers } from './customers.js';
 import { renderDashboard } from './dashboard.js';
 import { renderPrograms } from './programs.js';
+import { renderCommunities } from './communities.js';
 import { renderPermitsTab } from './layers/permits.js';
 import { renderSolarTab } from './layers/solar.js';
 import { renderGreenButtonTab } from './layers/greenbutton.js';
@@ -24,6 +25,7 @@ const TABS = [
   { id: 'permits', label: 'Permits', group: 'Intelligence', render: renderPermitsTab },
   { id: 'solar', label: 'Solar imagery', group: 'Intelligence', render: renderSolarTab },
   { id: 'green-button', label: 'Smart meter data', group: 'Intelligence', render: renderGreenButtonTab },
+  { id: 'communities', label: 'Communities', group: 'Context', render: renderCommunities, flush: true },
   { id: 'about', label: 'About', group: 'Context', render: renderAbout },
 ];
 

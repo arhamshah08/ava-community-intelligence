@@ -21,6 +21,7 @@ import {
   ladderFor,
 } from './data/homes.js';
 import { assetStrip, icon } from './icons.js';
+import { productsFor, sizingNote } from './data/products.js';
 import { usd, num, pct, esc } from './format.js';
 
 const ANGLES = [
@@ -417,6 +418,9 @@ function openCustomer(home) {
                   paybackOf(top)?.toFixed(1) ?? '—'
                 } yr payback</div></div>
                    </div>
+                   <button class="reco__shop" data-products="${top.key}">
+                     See products you can buy →
+                   </button>
                  </div>`
               : `<p class="nobar">Nothing on this property clears the return bar today${
                   dcProgramEnabled()
@@ -433,6 +437,8 @@ function openCustomer(home) {
           }
         </section>
 
+        <section id="m-products"></section>
+
         <section>
           <div class="sec__title">Value stack</div>
           ${stackPanel(home)}
@@ -448,12 +454,12 @@ function openCustomer(home) {
                       .slice(1, 4)
                       .map(
                         (m) => `
-                <div class="ledger__row">
+                <button class="ledger__row ledger__row--link" data-products="${m.key}">
                   <span>${esc(m.short)} · ${usd(netCapex(m))} net</span>
                   <span>${pct(roiOf(m), 0)} · ${
                           paybackOf(m)?.toFixed(1) ?? '—'
                         } yr</span>
-                </div>`
+                </button>`
                       )
                       .join('')
                   : '<div class="ledger__row"><span>Nothing else clears the bar</span><span>—</span></div>'
@@ -581,6 +587,73 @@ function openCustomer(home) {
 
   document.body.appendChild(modal);
   document.body.style.overflow = 'hidden';
+
+  const shop = modal.querySelector('#m-products');
+
+  const price = (it, cat) =>
+    it.perWatt
+      ? `$${it.from.toFixed(2)}–$${it.to.toFixed(2)}/W`
+      : `${usd(it.from)}–${usd(it.to)}`;
+
+  function showProducts(key) {
+    const cat = productsFor(key);
+    if (!cat) return;
+    const extra = cat.accessories;
+    shop.innerHTML = `
+      <div class="sec__title">${esc(cat.title)}</div>
+      <p class="nobar">${esc(sizingNote(key, home))}</p>
+      <div class="prodlist">
+        ${cat.items
+          .map(
+            (it) => `
+          <div class="prod">
+            <div class="prod__main">
+              <div class="prod__name">${esc(it.brand)} · ${esc(it.model)}</div>
+              <div class="prod__spec">${esc(it.spec)}</div>
+              ${it.note ? `<div class="prod__note">${esc(it.note)}</div>` : ''}
+            </div>
+            <div class="prod__price">${price(it, cat)}<small>${esc(
+              cat.unit
+            )}</small></div>
+          </div>`
+          )
+          .join('')}
+      </div>
+      ${
+        extra
+          ? `<div class="sec__title" style="margin-top:16px">${esc(extra.title)}</div>
+             <div class="prodlist">
+               ${extra.items
+                 .map(
+                   (it) => `
+                 <div class="prod">
+                   <div class="prod__main">
+                     <div class="prod__name">${esc(it.brand)} · ${esc(it.model)}</div>
+                     <div class="prod__spec">${esc(it.spec)}</div>
+                   </div>
+                   <div class="prod__price">${usd(it.from)}–${usd(
+                     it.to
+                   )}<small>hardware</small></div>
+                 </div>`
+                 )
+                 .join('')}
+             </div>`
+          : ''
+      }
+      <p class="nobar">Manufacturers and product lines are real; prices are indicative
+         installed ranges for the Bay Area, not quotes. Confirm sizing and price with an
+         installer before committing.
+         <button class="chip" id="m-shop-close">Hide products</button></p>
+    `;
+    shop.querySelector('#m-shop-close').onclick = () => {
+      shop.innerHTML = '';
+    };
+    shop.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  modal.querySelectorAll('[data-products]').forEach((b) => {
+    b.onclick = () => showProducts(b.dataset.products);
+  });
 
   const msg = modal.querySelector('#m-message');
   msg.value = composeMessage(home, state.angle);
