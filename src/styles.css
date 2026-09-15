@@ -790,7 +790,7 @@ table.tbl th.num { text-align: right; }
 
 /* ─────────────────────────── customers ─────────────────────────── */
 
-.two-col--wide { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.two-col--wide { grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr); }
 @media (max-width: 1180px) { .two-col--wide { grid-template-columns: minmax(0, 1fr); } }
 
 .ctable-wrap { max-height: 620px; overflow-y: auto; }
@@ -1174,3 +1174,5 @@ table.tbl th.num { text-align: right; }
 .nextrung__label { font-size: var(--fs-sm); }
 .nextrung__name { font-size: var(--fs-md); font-weight: var(--fw-bold); margin-top: 2px; }
 .nextrung__need { font-size: var(--fs-sm); line-height: var(--lh-body); margin-top: 3px; }
+
+.ctable__next { font-size: var(--fs-sm); }

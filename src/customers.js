@@ -159,7 +159,6 @@ export function renderCustomers(root, preselectId) {
               <thead>
                 <tr>
                   <th>Household</th>
-                  <th>Assets</th>
                   <th>Recommend</th>
                   <th>Value stack</th>
                   <th class="num">Next</th>
@@ -261,7 +260,6 @@ export function renderCustomers(root, preselectId) {
           h.netKwh
         )} kWh/yr · ${h.flexKw} kW flexible</div>
           </td>
-          <td><div class="facets">${assetStrip(h)}</div></td>
           <td>
             <span class="tag ${h.ready ? 'tag--ready' : 'tag--upgrade'}">${
           top ? esc(top.short) : 'Nothing pays yet'
@@ -269,7 +267,7 @@ export function renderCustomers(root, preselectId) {
           </td>
           <td>${stackBar(lad, maxStack)}</td>
           <td class="num ctable__next">${
-            lad.next ? esc(lad.next.label) : 'Fully stacked'
+            lad.next ? esc(lad.next.short) : 'Fully stacked'
           }</td>
         </tr>`;
       })

@@ -927,9 +927,16 @@ export function ladderFor(home) {
 
   // A rung is judged on the household first: whether the property can supply
   // what the programme buys. Only once it can does the programme switch matter.
+  const SHORT = {
+    flex: 'Flexibility',
+    dr: 'Demand response',
+    lcfs: 'Fuel credits',
+    sgip: 'Resilience',
+  };
   const rung = (id, label, amount, ok, need, capexOnly) => ({
     id,
     label,
+    short: SHORT[id] || label,
     amount,
     capexOnly: !!capexOnly,
     available: ok && programOn(id),
@@ -941,6 +948,7 @@ export function ladderFor(home) {
     {
       id: 'bills',
       label: 'Bill savings',
+      short: 'Bill savings',
       amount: amount('bills'),
       available: ranked.length > 0,
       blockedBy: ranked.length ? null : 'household',
